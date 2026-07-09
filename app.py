@@ -719,6 +719,10 @@ elif st.session_state.page == "Heart Disease":
     heart_columns = load_model("models/heart_columns.joblib")
     scaler_heart = load_model("models/heart_scaler.joblib")
     metrics_data = load_metrics("models/heart_metrics.json")
+    
+    # Model selection placed prominently below the banner
+    model_name = st.selectbox("Select ML Model (applies to both prediction and performance stats below):", list(metrics_data.keys()), key="heart_model_select")
+    
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.subheader("Clinical Parameters")
     
@@ -750,8 +754,6 @@ elif st.session_state.page == "Heart Disease":
             ["Upsloping (Up)", "Flat", "Downsloping (Down)"]
         )
         
-    # Model Selection
-    model_name = st.selectbox("Select ML Model:", list(metrics_data.keys()))
     st.markdown('</div>', unsafe_allow_html=True)
     
     if st.button("Evaluate Cardiac Risk", type="primary"):
@@ -859,14 +861,15 @@ elif st.session_state.page == "Heart Disease":
         col_chart1, col_chart2 = st.columns(2)
         
         with col_chart1:
-            sel_model = st.selectbox("Select model for details:", list(metrics_data.keys()), key="heart_metrics_sel")
-            selected_metrics = metrics_data[sel_model]
+            st.markdown(f"**Detailed Confusion Matrix ({model_name})**")
+            selected_metrics = metrics_data[model_name]
             cm = np.array(selected_metrics["confusion_matrix"])
             fig_cm = plot_confusion_matrix(cm, ["Normal", "Heart Disease"], "#ef4444")
             st.pyplot(fig_cm)
             
         with col_chart2:
-            fig_roc = plot_roc_curves(metrics_data, sel_model, "#ef4444")
+            st.markdown(f"**ROC Curves Comparison (Highlighting: {model_name})**")
+            fig_roc = plot_roc_curves(metrics_data, model_name, "#ef4444")
             st.pyplot(fig_roc)
 
 
@@ -942,6 +945,10 @@ elif st.session_state.page == "Mental Health":
     scaler_mental = load_model("models/mental_scaler.joblib")
     mental_encoders = load_model("models/mental_encoders.joblib")
     metrics_data = load_metrics("models/mental_metrics.json")
+    
+    # Model selection placed prominently below the banner
+    model_name = st.selectbox("Select ML Model (applies to both prediction and performance stats below):", list(metrics_data.keys()), key="mental_model_select")
+    
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.subheader("Demographics & Work Profile")
     
@@ -984,7 +991,6 @@ elif st.session_state.page == "Mental Health":
         substance_use = st.selectbox("Substance Use:", ["No", "Yes"])
         
     st.markdown("<hr style='border-color: rgba(0,0,0,0.05);'>", unsafe_allow_html=True)
-    model_name = st.selectbox("Select ML Model:", list(metrics_data.keys()))
     st.markdown('</div>', unsafe_allow_html=True)
     
     if st.button("Evaluate Mental Health Risk", type="primary"):
@@ -1097,10 +1103,8 @@ elif st.session_state.page == "Mental Health":
             })
         st.table(pd.DataFrame(rows).set_index("Model Name"))
         
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.subheader("Confusion Matrix Details")
-        sel_model = st.selectbox("Select model for details:", list(metrics_data.keys()), key="mental_metrics_sel")
-        selected_metrics = metrics_data[sel_model]
+        st.markdown(f"**Detailed Confusion Matrix ({model_name})**")
+        selected_metrics = metrics_data[model_name]
         cm = np.array(selected_metrics["confusion_matrix"])
         fig_cm = plot_confusion_matrix(cm, ["Low", "Medium", "High"], "#3b82f6")
         st.pyplot(fig_cm)
@@ -1173,6 +1177,10 @@ elif st.session_state.page == "Diabetes":
     diab_columns = load_model("models/diabetes_columns.joblib")
     scaler_diab = load_model("models/diabetes_scaler.joblib")
     metrics_data = load_metrics("models/diabetes_metrics.json")
+    
+    # Model selection placed prominently below the banner
+    model_name = st.selectbox("Select ML Model (applies to both prediction and performance stats below):", list(metrics_data.keys()), key="diabetes_model_select")
+    
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.subheader("Physiological Metrics")
     
@@ -1189,8 +1197,6 @@ elif st.session_state.page == "Diabetes":
         diabetes_pedigree = st.slider("Diabetes Pedigree Function:", 0.08, 2.42, 0.37, step=0.01)
         age = st.slider("Age (Years):", 21, 90, 30)
         
-    # Model selector
-    model_name = st.selectbox("Select ML Model:", list(metrics_data.keys()))
     st.markdown('</div>', unsafe_allow_html=True)
     
     if st.button("Evaluate Diabetes Risk", type="primary"):
@@ -1308,12 +1314,13 @@ elif st.session_state.page == "Diabetes":
         col_chart1, col_chart2 = st.columns(2)
         
         with col_chart1:
-            sel_model = st.selectbox("Select model for details:", list(metrics_data.keys()), key="diabetes_metrics_sel")
-            selected_metrics = metrics_data[sel_model]
+            st.markdown(f"**Detailed Confusion Matrix ({model_name})**")
+            selected_metrics = metrics_data[model_name]
             cm = np.array(selected_metrics["confusion_matrix"])
             fig_cm = plot_confusion_matrix(cm, ["Negative", "Positive"], "#f59e0b")
             st.pyplot(fig_cm)
             
         with col_chart2:
-            fig_roc = plot_roc_curves(metrics_data, sel_model, "#f59e0b")
+            st.markdown(f"**ROC Curves Comparison (Highlighting: {model_name})**")
+            fig_roc = plot_roc_curves(metrics_data, model_name, "#f59e0b")
             st.pyplot(fig_roc)
