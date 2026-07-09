@@ -720,7 +720,6 @@ elif st.session_state.page == "Heart Disease":
     # Model selection placed prominently below the banner
     model_name = st.selectbox("Select ML Model (applies to both prediction and performance stats below):", list(metrics_data.keys()), key="heart_model_select")
     
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.subheader("Clinical Parameters")
     
     # Form inputs
@@ -751,8 +750,6 @@ elif st.session_state.page == "Heart Disease":
             ["Upsloping (Up)", "Flat", "Downsloping (Down)"]
         )
         
-    st.markdown('</div>', unsafe_allow_html=True)
-    
     if st.button("Evaluate Cardiac Risk", type="primary"):
         # Setup features dict matching dummy coding
         features_dict = {col: 0 for col in heart_columns}
@@ -946,7 +943,6 @@ elif st.session_state.page == "Mental Health":
     # Model selection placed prominently below the banner
     model_name = st.selectbox("Select ML Model (applies to both prediction and performance stats below):", list(metrics_data.keys()), key="mental_model_select")
     
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.subheader("Demographics & Work Profile")
     
     # Categorical forms map options from LabelEncoders
@@ -988,7 +984,6 @@ elif st.session_state.page == "Mental Health":
         substance_use = st.selectbox("Substance Use:", ["No", "Yes"])
         
     st.markdown("<hr style='border-color: rgba(0,0,0,0.05);'>", unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
     
     if st.button("Evaluate Mental Health Risk", type="primary"):
         # Construct dictionary
@@ -1178,7 +1173,6 @@ elif st.session_state.page == "Diabetes":
     # Model selection placed prominently below the banner
     model_name = st.selectbox("Select ML Model (applies to both prediction and performance stats below):", list(metrics_data.keys()), key="diabetes_model_select")
     
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.subheader("Physiological Metrics")
     
     col1, col2 = st.columns(2)
@@ -1194,8 +1188,6 @@ elif st.session_state.page == "Diabetes":
         diabetes_pedigree = st.slider("Diabetes Pedigree Function:", 0.08, 2.42, 0.37, step=0.01)
         age = st.slider("Age (Years):", 21, 90, 30)
         
-    st.markdown('</div>', unsafe_allow_html=True)
-    
     if st.button("Evaluate Diabetes Risk", type="primary"):
         # Load medians dynamically from source data
         medians = {
