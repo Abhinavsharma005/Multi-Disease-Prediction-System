@@ -1,0 +1,706 @@
+================================================================================
+INSPECTING: symptom-based-disease-prediction.ipynb
+================================================================================
+
+--- Code Cell 1 ---
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import warnings 
+warnings.filterwarnings('ignore')
+
+--- Code Cell 2 ---
+df = pd.read_csv(r"Training(symptom-based).csv")
+
+--- Code Cell 3 ---
+df.head()
+
+--- Code Cell 4 ---
+df.shape
+
+--- Code Cell 5 ---
+print(df["prognosis"].nunique())
+
+--- Code Cell 6 ---
+print(df["prognosis"].value_counts())
+
+--- Code Cell 7 ---
+df.info()
+
+--- Code Cell 8 ---
+df.describe()
+
+--- Code Cell 9 ---
+df.isnull().sum()
+
+--- Code Cell 10 ---
+df.columns
+
+--- Code Cell 11 ---
+df.drop("Unnamed: 133", axis=1, inplace=True)
+
+--- Code Cell 12 ---
+sns.heatmap(df.corr(numeric_only=True),
+            annot=True,
+            cmap="coolwarm")
+
+--- Code Cell 13 ---
+from sklearn.model_selection import train_test_split
+
+# Input Features
+X = df.drop("prognosis", axis=1)
+
+# Output Feature
+y = df["prognosis"]
+
+# Split dataset into Training & Testing data
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
+)
+
+--- Code Cell 14 ---
+from sklearn.naive_bayes import GaussianNB
+nb_model = GaussianNB()
+
+nb_model.fit(X_train, y_train)
+
+--- Code Cell 15 ---
+# Predict on testing data
+y_pred = nb_model.predict(X_test)
+
+--- Code Cell 16 ---
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    confusion_matrix,
+    classification_report
+)
+
+--- Code Cell 17 ---
+print("Accuracy :", accuracy_score(y_test, y_pred))
+print("Precision :", precision_score(
+    y_test,
+    y_pred,
+    average="weighted"
+))
+
+print("Recall :", recall_score(
+    y_test,
+    y_pred,
+    average="weighted"
+))
+
+print("F1 Score :", f1_score(
+    y_test,
+    y_pred,
+    average="weighted"
+))
+
+--- Code Cell 18 ---
+from sklearn.tree import DecisionTreeClassifier
+
+dt_model = DecisionTreeClassifier(random_state=42)
+# Train the selected model
+dt_model.fit(X_train, y_train)
+# Predict on testing data
+y_pred = dt_model.predict(X_test)
+
+--- Code Cell 19 ---
+print("Accuracy :", accuracy_score(y_test, y_pred))
+
+print("Precision :", precision_score(
+    y_test,
+    y_pred,
+    average="weighted"
+))
+
+print("Recall :", recall_score(
+    y_test,
+    y_pred,
+    average="weighted"
+))
+
+print("F1 Score :", f1_score(
+    y_test,
+    y_pred,
+    average="weighted"
+))
+
+--- Code Cell 20 ---
+
+================================================================================
+INSPECTING: HeartdiseaseFinal.ipynb
+================================================================================
+
+--- Code Cell 1 ---
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+warnings.filterwarnings('ignore')
+
+--- Code Cell 2 ---
+df = pd.read_csv("heart.csv")
+
+--- Code Cell 3 ---
+df.head()
+
+--- Code Cell 4 ---
+df.shape
+
+--- Code Cell 5 ---
+df.info()
+
+--- Code Cell 6 ---
+df.describe()
+
+--- Code Cell 7 ---
+df.duplicated().sum()
+
+--- Code Cell 8 ---
+df['HeartDisease'].value_counts().plot(kind = 'bar')
+
+--- Code Cell 9 ---
+df.isnull().sum()
+
+--- Code Cell 10 ---
+df.columns
+
+--- Code Cell 11 ---
+def plotting(var,num):
+    plt.subplot(2,2,num)
+    sns.histplot(df[var],kde = True)
+
+plotting("Age",1)
+plotting("RestingBP",2)
+plotting("Cholesterol",3)
+plotting("MaxHR",4)
+
+plt.tight_layout()
+
+--- Code Cell 12 ---
+cholesterol_mean = df.loc[df['Cholesterol'] != 0, 'Cholesterol'].mean()
+
+# Step 2: Replace 0s with the calculated mean
+df['Cholesterol'] = df['Cholesterol'].replace(0, cholesterol_mean)
+
+# Optional: Round to 2 decimal places (if needed)
+df['Cholesterol'] = df['Cholesterol'].round(2)
+
+--- Code Cell 13 ---
+resting_bp_mean = df.loc[df['RestingBP'] != 0, 'RestingBP'].mean()
+
+df['RestingBP'] = df['RestingBP'].replace(0, resting_bp_mean)
+
+df['RestingBP'] = df['RestingBP'].round(2)
+
+--- Code Cell 14 ---
+!pip install sheryanalysis==0.1.0
+
+--- Code Cell 15 ---
+import sheryanalysis
+sheryanalysis.analyze(df)
+
+--- Code Cell 16 ---
+sns.countplot(x = df['Sex'])
+
+--- Code Cell 17 ---
+sns.countplot(x = df['ChestPainType'],hue = df['HeartDisease'])
+
+--- Code Cell 18 ---
+sns.countplot(x = df['FastingBS'],hue = df['HeartDisease'])
+
+--- Code Cell 19 ---
+sns.boxplot(x='HeartDisease', y='Cholesterol', data=df)
+
+--- Code Cell 20 ---
+sns.violinplot(x='HeartDisease', y='Age', data=df)
+
+--- Code Cell 21 ---
+sns.heatmap(df.corr(numeric_only=True), annot=True)
+
+--- Code Cell 22 ---
+df.head()
+
+--- Code Cell 23 ---
+df_encoded = pd.get_dummies(df,drop_first=True)
+
+--- Code Cell 24 ---
+df_encoded
+
+--- Code Cell 25 ---
+df_encoded = df_encoded.astype(int)
+
+--- Code Cell 26 ---
+df_encoded
+
+--- Code Cell 27 ---
+df_encoded.columns
+
+--- Code Cell 28 ---
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, f1_score, classification_report
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+
+--- Code Cell 29 ---
+X = df_encoded.drop('HeartDisease', axis=1)
+y = df_encoded['HeartDisease']
+
+--- Code Cell 30 ---
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, stratify=y, test_size=0.2, random_state=42)
+
+--- Code Cell 31 ---
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+--- Code Cell 32 ---
+models = {
+    "Logistic Regression": LogisticRegression(),
+    "KNN": KNeighborsClassifier(),
+    "Naive Bayes": GaussianNB(),
+    "Decision Tree": DecisionTreeClassifier(),
+    "SVM (RBF Kernel)": SVC(probability=True)
+}
+
+--- Code Cell 33 ---
+results = []
+
+--- Code Cell 34 ---
+for name, model in models.items():
+    model.fit(X_train_scaled, y_train)
+    y_pred = model.predict(X_test_scaled)
+    acc = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+    results.append({
+        'Model': name,
+        'Accuracy': round(acc, 4),
+        'F1 Score': round(f1, 4)
+    })
+
+--- Code Cell 35 ---
+results
+
+--- Code Cell 36 ---
+import joblib
+joblib.dump(models['KNN'],'KNN_heart.pkl')
+joblib.dump(scaler,'scaler.pkl')
+joblib.dump(X.columns.tolist(),'columns.pkl')
+
+--- Code Cell 37 ---
+
+================================================================================
+INSPECTING: diabetes-prediction.ipynb
+================================================================================
+
+--- Code Cell 1 ---
+import pandas as pd
+import numpy as np
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    roc_auc_score,
+    roc_curve
+)
+
+--- Code Cell 2 ---
+df = pd.read_csv('diabetes.csv')
+
+df.head()
+
+--- Code Cell 3 ---
+print(df.shape)
+
+df.info()
+
+df.describe()
+
+--- Code Cell 4 ---
+cols = [
+    'Glucose',
+    'BloodPressure',
+    'SkinThickness',
+    'Insulin',
+    'BMI'
+]
+
+for col in cols:
+    df[col] = df[col].replace(0,np.nan)
+
+print(df.isnull().sum())
+
+--- Code Cell 5 ---
+for col in cols:
+    df[col].fillna(df[col].median(), inplace=True)
+
+--- Code Cell 6 ---
+plt.figure(figsize=(10,8))
+
+sns.heatmap(
+    df.corr(),
+    annot=True,
+    cmap='coolwarm'
+)
+
+plt.title("Feature Correlation")
+plt.show()
+
+--- Code Cell 7 ---
+sns.countplot(
+    x='Outcome',
+    data=df
+)
+
+plt.title("Diabetes Distribution")
+plt.show()
+
+--- Code Cell 8 ---
+plt.figure(figsize=(8,5))
+
+sns.boxplot(
+    x='Outcome',
+    y='Glucose',
+    data=df
+)
+
+plt.show()
+
+--- Code Cell 9 ---
+sns.boxplot(
+    x='Outcome',
+    y='Age',
+    data=df
+)
+
+plt.show()
+
+--- Code Cell 10 ---
+sns.boxplot(
+    x='Outcome',
+    y='BMI',
+    data=df
+)
+
+plt.show()
+
+--- Code Cell 11 ---
+df['AgeGroup'] = pd.cut(
+    df['Age'],
+    bins=[20,30,40,50,60,100],
+    labels=[1,2,3,4,5]
+)
+
+df['AgeGroup'] = df['AgeGroup'].astype(int)
+
+--- Code Cell 12 ---
+def bmi_category(x):
+
+    if x < 18.5:
+        return 0
+
+    elif x < 25:
+        return 1
+
+    elif x < 30:
+        return 2
+
+    else:
+        return 3
+
+df['BMI_Category'] = df['BMI'].apply(bmi_category)
+
+--- Code Cell 13 ---
+X = df.drop('Outcome', axis=1)
+
+y = df['Outcome']
+
+--- Code Cell 14 ---
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=160,
+    stratify=y
+)
+
+--- Code Cell 15 ---
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+
+X_test = scaler.transform(X_test)
+
+--- Code Cell 16 ---
+models = {
+    "Logistic Regression":
+        LogisticRegression(max_iter=2000, random_state=42),
+
+    "Random Forest":
+        RandomForestClassifier(random_state=42),
+
+    "Gradient Boosting":
+        GradientBoostingClassifier(random_state=42)
+}
+
+--- Code Cell 17 ---
+results = []
+
+for name, model in models.items():
+
+    model.fit(X_train, y_train)
+
+    pred = model.predict(X_test)
+
+    acc = accuracy_score(y_test, pred)
+
+    auc = roc_auc_score(y_test, pred)
+
+    results.append([name, acc, auc])
+
+results_df = pd.DataFrame(
+    results,
+    columns=['Model','Accuracy','ROC_AUC']
+)
+
+results_df
+================================================================================
+INSPECTING: mental-health-risk-prediction.ipynb
+================================================================================
+
+--- Code Cell 1 ---
+import pandas as pd
+import numpy as np
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+--- Code Cell 2 ---
+df = pd.read_csv('/kaggle/input/datasets/guriya79/mental-health-disorder/mental_health_risk_dataset (1).csv')  
+df.head()
+
+--- Code Cell 3 ---
+df.info()
+df.describe()
+
+--- Code Cell 4 ---
+df.size
+
+--- Code Cell 5 ---
+num_cols = [
+    'age', 'sleep_hours', 'physical_activity_hours_per_week',
+    'screen_time_hours_per_day', 'social_support_score',
+    'work_stress_level', 'academic_pressure_level',
+    'job_satisfaction_score', 'financial_stress_level',
+    'working_hours_per_week', 'anxiety_score',
+    'depression_score', 'stress_level'
+]
+
+plt.figure(figsize=(15,10))
+df[num_cols].boxplot(rot=45)
+plt.title("Boxplots for Numerical Features")
+plt.show()
+
+--- Code Cell 6 ---
+sns.countplot(x='gender', hue='mental_health_risk', data=df)
+plt.title("Gender vs Mental Health Risk")
+plt.show()
+
+--- Code Cell 7 ---
+sns.countplot(x='employment_status', hue='mental_health_risk', data=df)
+plt.xticks(rotation=45)
+plt.title("Employment Status vs Mental Health Risk")
+plt.show()
+
+--- Code Cell 8 ---
+sns.countplot(x='marital_status', hue='mental_health_risk', data=df)
+plt.title("Marital Status vs Mental Health Risk")
+plt.show()
+
+--- Code Cell 9 ---
+sns.countplot(x='substance_use', hue='mental_health_risk', data=df)
+plt.title("Substance Use vs Mental Health Risk")
+plt.show()
+
+--- Code Cell 10 ---
+sns.countplot(x='therapy_history', hue='mental_health_risk', data=df)
+plt.title("Therapy History vs Mental Health Risk")
+plt.show()
+
+--- Code Cell 11 ---
+sns.countplot(x='panic_attack_history', hue='mental_health_risk', data=df)
+plt.title("Panic Attack History vs Mental Health Risk")
+plt.show()
+
+--- Code Cell 12 ---
+df.groupby('work_stress_level')['mental_health_risk'].value_counts().unstack().plot(kind='bar')
+plt.title("Work Stress vs Mental Health Risk")
+plt.show()
+
+--- Code Cell 13 ---
+from sklearn.preprocessing import LabelEncoder
+
+le = LabelEncoder()
+
+cat_cols = [
+    'gender', 'marital_status', 'education_level',
+    'employment_status', 'panic_attack_history',
+    'family_history_mental_illness',
+    'previous_mental_health_diagnosis',
+    'therapy_history', 'substance_use'
+]
+
+for col in cat_cols:
+    df[col] = le.fit_transform(df[col])
+
+--- Code Cell 14 ---
+#cat_cols = df.select_dtypes(include='object').columns
+#print(cat_cols)
+#from sklearn.preprocessing import LabelEncoder
+
+#le = LabelEncoder()
+
+#for col in cat_cols:
+    #df[col] = le.fit_transform(df[col])
+#
+
+--- Code Cell 15 ---
+X = df.drop("mental_health_risk", axis=1)
+y = df["mental_health_risk"]
+
+--- Code Cell 16 ---
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+--- Code Cell 17 ---
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+--- Code Cell 18 ---
+print(df.dtypes)
+
+--- Code Cell 19 ---
+lr = LogisticRegression()
+lr.fit(X_train, y_train)
+
+y_pred_lr = lr.predict(X_test)
+
+print("Logistic Regression Accuracy:", accuracy_score(y_test, y_pred_lr))
+
+--- Code Cell 20 ---
+dt = DecisionTreeClassifier()
+dt.fit(X_train, y_train)
+
+y_pred_dt = dt.predict(X_test)
+
+print("Decision Tree Accuracy:", accuracy_score(y_test, y_pred_dt))
+
+--- Code Cell 21 ---
+rf = RandomForestClassifier(n_estimators=100)
+rf.fit(X_train, y_train)
+
+y_pred_rf = rf.predict(X_test)
+
+print("Random Forest Accuracy:", accuracy_score(y_test, y_pred_rf))
+
+--- Code Cell 22 ---
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+
+y_pred_knn = knn.predict(X_test)
+
+print("KNN Accuracy:", accuracy_score(y_test, y_pred_knn))
+
+--- Code Cell 23 ---
+nb = GaussianNB()
+nb.fit(X_train, y_train)
+
+y_pred_nb = nb.predict(X_test)
+
+print("Naive Bayes Accuracy:", accuracy_score(y_test, y_pred_nb))
+
+--- Code Cell 24 ---
+svm = SVC()
+svm.fit(X_train, y_train)
+
+y_pred_svm = svm.predict(X_test)
+
+print("SVM Accuracy:", accuracy_score(y_test, y_pred_svm))
+
+--- Code Cell 25 ---
+cm = confusion_matrix(y_test, y_pred_rf)
+
+sns.heatmap(cm, annot=True, fmt='d')
+plt.title("Confusion Matrix - Random Forest")
+plt.show()
+
+--- Code Cell 26 ---
+print(classification_report(y_test, y_pred_rf))
+
+--- Code Cell 27 ---
+results = {
+    "Logistic Regression": accuracy_score(y_test, y_pred_lr),
+    "Decision Tree": accuracy_score(y_test, y_pred_dt),
+    "Random Forest": accuracy_score(y_test, y_pred_rf),
+    "KNN": accuracy_score(y_test, y_pred_knn),
+    "Naive Bayes": accuracy_score(y_test, y_pred_nb),
+    "SVM": accuracy_score(y_test, y_pred_svm)
+}
+
+for model, acc in results.items():
+    print(model, ":", acc)
+
+--- Code Cell 28 ---
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {
+    'n_estimators': [50, 100],
+    'max_depth': [None, 10, 20]
+}
+
+grid = GridSearchCV(RandomForestClassifier(), param_grid, cv=5)
+grid.fit(X_train, y_train)
+
+print("Best Parameters:", grid.best_params_)
