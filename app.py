@@ -391,7 +391,7 @@ if st.session_state.page == "Symptom-Based":
     
     render_html_card("""
         <div style="
-            background: linear-gradient(135deg, #0cbd8f 0%, #059669 100%);
+            background: linear-gradient(135deg, #34d399 0%, #0cbd8f 100%);
             border-radius: 16px;
             padding: 24px;
             color: #ffffff;
@@ -656,7 +656,7 @@ elif st.session_state.page == "Heart Disease":
     
     render_html_card("""
         <div style="
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
             border-radius: 16px;
             padding: 24px;
             color: #ffffff;
@@ -875,7 +875,7 @@ elif st.session_state.page == "Mental Health":
     
     render_html_card("""
         <div style="
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
             border-radius: 16px;
             padding: 24px;
             color: #ffffff;
@@ -1110,7 +1110,7 @@ elif st.session_state.page == "Diabetes":
     
     render_html_card("""
         <div style="
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
             border-radius: 16px;
             padding: 24px;
             color: #ffffff;
