@@ -631,24 +631,21 @@ if st.session_state.page == "Symptom-Based":
         
         # Detailed stats
         st.markdown("<br>", unsafe_allow_html=True)
-        st.subheader("Detailed Model Confusion Analysis")
-        sel_model = st.selectbox("Select model for confusion details:", list(metrics_data.keys()), key="sym_cm_sel")
+        st.subheader(f"Detailed Model Confusion Analysis ({model_name})")
         
-        selected_metrics = metrics_data[sel_model]
+        selected_metrics = metrics_data[model_name]
         cm = np.array(selected_metrics["confusion_matrix"])
         classes = selected_metrics["classes"]
         
-        # Since classes size is large (41), let's plot a clean, larger plot in expander
-        with st.expander("View Full Confusion Heatmap (41 x 41 Classes)"):
-            fig, ax = plt.subplots(figsize=(12, 10))
-            cmap = sns.light_palette("#0cbd8f", as_cmap=True)
-            sns.heatmap(cm, annot=False, cmap=cmap, xticklabels=classes, yticklabels=classes, ax=ax)
-            plt.xticks(rotation=90, fontsize=6)
-            plt.yticks(fontsize=6)
-            ax.set_xlabel('Predicted Class', fontweight='bold', fontsize=8)
-            ax.set_ylabel('True Class', fontweight='bold', fontsize=8)
-            plt.tight_layout()
-            st.pyplot(fig)
+        fig, ax = plt.subplots(figsize=(12, 10))
+        cmap = sns.light_palette("#0cbd8f", as_cmap=True)
+        sns.heatmap(cm, annot=False, cmap=cmap, xticklabels=classes, yticklabels=classes, ax=ax)
+        plt.xticks(rotation=90, fontsize=6)
+        plt.yticks(fontsize=6)
+        ax.set_xlabel('Predicted Class', fontweight='bold', fontsize=8)
+        ax.set_ylabel('True Class', fontweight='bold', fontsize=8)
+        plt.tight_layout()
+        st.pyplot(fig)
 
 
 # ------------------------------------------
