@@ -6,6 +6,13 @@ import json
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import textwrap
+
+def render_html_card(html_str):
+    # Strip leading/trailing spaces from each line and join without newlines
+    clean_str = "".join([line.strip() for line in html_str.split("\n")])
+    st.markdown(clean_str, unsafe_allow_html=True)
+
 
 # Set page config
 st.set_page_config(
@@ -44,7 +51,7 @@ def load_metrics(path):
 # NAVIGATION STATE
 # ==========================================
 if "page" not in st.session_state:
-    st.session_state.page = "Home"
+    st.session_state.page = "Symptom-Based"
 
 # ==========================================
 # THEME STYLING FUNCTION
@@ -355,9 +362,8 @@ with st.sidebar:
     st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
     
     nav_items = {
-        "Home": "🏠 Home Dashboard",
-        "Symptom-Based": "🩺 Symptom Prediction",
-        "Heart Disease": "❤️ Heart Disease Prediction",
+        "Symptom-Based": "🩺 Symptom Checker",
+        "Heart Disease": "❤️ Heart Disease Risk",
         "Mental Health": "🧠 Mental Health Risk",
         "Diabetes": "🩸 Diabetes Prediction"
     }
@@ -369,7 +375,7 @@ with st.sidebar:
             st.session_state.page = key
             st.rerun()
             
-    st.markdown("<div style='position: fixed; bottom: 15px; width: 220px; text-align: center; color: #64748b; font-size: 11px;'>CareCompanion ML Framework &copy; 2026</div>", unsafe_allow_html=True)
+    st.markdown("<div style='position: fixed; bottom: 15px; width: 220px; text-align: center; color: #64748b; font-size: 11px;'>HealthPredictor ML Framework &copy; 2026</div>", unsafe_allow_html=True)
 
 
 # ==========================================
@@ -377,108 +383,73 @@ with st.sidebar:
 # ==========================================
 
 # ------------------------------------------
-# PAGE: HOME
-# ------------------------------------------
-if st.session_state.page == "Home":
-    # Indigo theme
-    apply_theme_css("#6366f1", "#f8fafc", "#e2e8f0")
-    
-    st.markdown("""
-        <div style='margin-top: 10px;'>
-            <h1 style='font-size: 38px; margin-bottom: 5px;'>Predictive Health Dashboard</h1>
-            <p style='color: #475569; font-size: 18px;'>Integrate, evaluate, and use machine learning models trained on clinical datasets for instant health risk assessment.</p>
-        </div>
-        <div class="custom-hr"></div>
-    """, unsafe_allow_html=True)
-    
-    # 2x2 cards layout
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("""
-            <div class="home-card" style="border-top: 5px solid #0cbd8f;">
-                <div>
-                    <div style="font-size: 32px; margin-bottom: 10px;">🩺</div>
-                    <h3 style="margin-top: 0; margin-bottom: 8px;">Symptom-Based Disease</h3>
-                    <p style="color: #475569; font-size: 14px; line-height: 1.5;">
-                        Analyze a combinations of 132 different symptoms to diagnose the most likely clinical condition out of 41 unique disease categories.
-                    </p>
-                    <span class="badge" style="background-color: #e6fcf5; border-color: #0cbd8f; color: #099268;">Naive Bayes & Decision Tree</span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        if st.button("Open Symptom Checker", key="go_symptom", use_container_width=True, type="primary"):
-            st.session_state.page = "Symptom-Based"
-            st.rerun()
-            
-        st.markdown("<div style='margin-bottom: 30px;'></div>", unsafe_allow_html=True)
-        
-        st.markdown("""
-            <div class="home-card" style="border-top: 5px solid #3b82f6;">
-                <div>
-                    <div style="font-size: 32px; margin-bottom: 10px;">🧠</div>
-                    <h3 style="margin-top: 0; margin-bottom: 8px;">Mental Health Risk</h3>
-                    <p style="color: #475569; font-size: 14px; line-height: 1.5;">
-                        Evaluate and predict mental health risk levels (Low, Medium, High) based on life factors, sleep, work stress, anxiety, and depression indices.
-                    </p>
-                    <span class="badge" style="background-color: #eff6ff; border-color: #3b82f6; color: #1d4ed8;">Random Forest & SVM</span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        if st.button("Open Mental Health Evaluator", key="go_mental", use_container_width=True, type="primary"):
-            st.session_state.page = "Mental Health"
-            st.rerun()
-
-    with col2:
-        st.markdown("""
-            <div class="home-card" style="border-top: 5px solid #ef4444;">
-                <div>
-                    <div style="font-size: 32px; margin-bottom: 10px;">❤️</div>
-                    <h3 style="margin-top: 0; margin-bottom: 8px;">Heart Disease Risk</h3>
-                    <p style="color: #475569; font-size: 14px; line-height: 1.5;">
-                        Assess cardiac health parameters (Age, Cholesterol, RestingBP, ECG, ST segment) to predict the likelihood of cardiac disease.
-                    </p>
-                    <span class="badge" style="background-color: #fef2f2; border-color: #ef4444; color: #b91c1c;">KNN, Logistic Reg & SVM</span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        if st.button("Open Heart Risk Evaluator", key="go_heart", use_container_width=True, type="primary"):
-            st.session_state.page = "Heart Disease"
-            st.rerun()
-
-        st.markdown("<div style='margin-bottom: 30px;'></div>", unsafe_allow_html=True)
-        
-        st.markdown("""
-            <div class="home-card" style="border-top: 5px solid #f59e0b;">
-                <div>
-                    <div style="font-size: 32px; margin-bottom: 10px;">🩸</div>
-                    <h3 style="margin-top: 0; margin-bottom: 8px;">Diabetes Evaluation</h3>
-                    <p style="color: #475569; font-size: 14px; line-height: 1.5;">
-                        Assess physiological measurements such as Glucose, Insulin, BMI, and Age to predict diabetes risk.
-                    </p>
-                    <span class="badge" style="background-color: #fefbeb; border-color: #f59e0b; color: #b45309;">Gradient Boosting & RF</span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        if st.button("Open Diabetes Analyzer", key="go_diabetes", use_container_width=True, type="primary"):
-            st.session_state.page = "Diabetes"
-            st.rerun()
-
-
-# ------------------------------------------
 # PAGE: SYMPTOM-BASED DISEASE PREDICTION
 # ------------------------------------------
-elif st.session_state.page == "Symptom-Based":
+if st.session_state.page == "Symptom-Based":
     apply_theme_css("#0cbd8f", "#f4fbf7", "#e6f7f0")
     apply_symptom_page_css()
     
-    st.markdown("""
-        <div style='margin-top: 10px;'>
-            <h1 style='margin-bottom: 5px;'>🩺 Symptom-Based Disease Prediction</h1>
-            <p style='color: #475569;'>Check diagnosis predictions by selecting active patient symptoms.</p>
+    render_html_card("""
+        <div style="
+            background: linear-gradient(135deg, #0cbd8f 0%, #059669 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(12, 189, 143, 0.15);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        ">
+            <!-- Decorative background shapes -->
+            <div style="position: absolute; right: -30px; top: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); pointer-events: none;"></div>
+            <div style="position: absolute; right: 50px; bottom: -50px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); pointer-events: none;"></div>
+            
+            <!-- Icon Container -->
+            <div style="
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 12px;
+                padding: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            ">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                    <path d="M12 2v10a4 4 0 0 0 8 0V4"/>
+                    <path d="M12 12a4 4 0 0 1-8 0V4"/>
+                    <path d="M12 4h8"/>
+                    <path d="M12 4H4"/>
+                    <path d="M12 16v4"/>
+                    <circle cx="12" cy="20" r="2"/>
+                </svg>
+            </div>
+            
+            <!-- Text Content -->
+            <div style="flex-grow: 1;">
+                <h1 style="
+                    color: #ffffff !important;
+                    margin: 0 0 4px 0 !important;
+                    font-size: 24px !important;
+                    font-weight: 700 !important;
+                    line-height: 1.2 !important;
+                    border: none !important;
+                    padding: 0 !important;
+                ">Symptom-Based Disease Prediction</h1>
+                <p style="
+                    color: rgba(255, 255, 255, 0.9) !important;
+                    margin: 0 !important;
+                    font-size: 14px !important;
+                    font-weight: 400 !important;
+                    line-height: 1.4 !important;
+                ">Check diagnosis predictions by selecting active patient symptoms.</p>
+            </div>
         </div>
-        <div class="custom-hr"></div>
-    """, unsafe_allow_html=True)
+    """)
     
     # Load assets
     symptom_features = load_model("models/symptom_features.joblib")
@@ -686,13 +657,63 @@ elif st.session_state.page == "Symptom-Based":
 elif st.session_state.page == "Heart Disease":
     apply_theme_css("#ef4444", "#fdf2f2", "#fff0f0")
     
-    st.markdown("""
-        <div style='margin-top: 10px;'>
-            <h1 style='margin-bottom: 5px;'>❤️ Heart Disease Prediction</h1>
-            <p style='color: #475569;'>Determine cardiac risk levels using clinical measurements.</p>
+    render_html_card("""
+        <div style="
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.15);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        ">
+            <!-- Decorative background shapes -->
+            <div style="position: absolute; right: -30px; top: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); pointer-events: none;"></div>
+            <div style="position: absolute; right: 50px; bottom: -50px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); pointer-events: none;"></div>
+            
+            <!-- Icon Container -->
+            <div style="
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 12px;
+                padding: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            ">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    <path d="M6 12h3l2-3 2 6 1-3h4"/>
+                </svg>
+            </div>
+            
+            <!-- Text Content -->
+            <div style="flex-grow: 1;">
+                <h1 style="
+                    color: #ffffff !important;
+                    margin: 0 0 4px 0 !important;
+                    font-size: 24px !important;
+                    font-weight: 700 !important;
+                    line-height: 1.2 !important;
+                    border: none !important;
+                    padding: 0 !important;
+                ">Heart Disease Prediction</h1>
+                <p style="
+                    color: rgba(255, 255, 255, 0.9) !important;
+                    margin: 0 !important;
+                    font-size: 14px !important;
+                    font-weight: 400 !important;
+                    line-height: 1.4 !important;
+                ">Determine cardiac risk levels using clinical measurements.</p>
+            </div>
         </div>
-        <div class="custom-hr"></div>
-    """, unsafe_allow_html=True)
+    """)
     
     # Load models & configurations
     heart_columns = load_model("models/heart_columns.joblib")
@@ -855,13 +876,66 @@ elif st.session_state.page == "Heart Disease":
 elif st.session_state.page == "Mental Health":
     apply_theme_css("#3b82f6", "#f0f6ff", "#e0eefe")
     
-    st.markdown("""
-        <div style='margin-top: 10px;'>
-            <h1 style='margin-bottom: 5px;'>🧠 Mental Health Risk Prediction</h1>
-            <p style='color: #475569;'>Assess risk levels (Low, Medium, High) based on life and occupational parameters.</p>
+    render_html_card("""
+        <div style="
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        ">
+            <!-- Decorative background shapes -->
+            <div style="position: absolute; right: -30px; top: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); pointer-events: none;"></div>
+            <div style="position: absolute; right: 50px; bottom: -50px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); pointer-events: none;"></div>
+            
+            <!-- Icon Container -->
+            <div style="
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 12px;
+                padding: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            ">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                    <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
+                    <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
+                    <path d="M12 5v14"/>
+                    <path d="M12 12h6"/>
+                    <path d="M12 12H6"/>
+                </svg>
+            </div>
+            
+            <!-- Text Content -->
+            <div style="flex-grow: 1;">
+                <h1 style="
+                    color: #ffffff !important;
+                    margin: 0 0 4px 0 !important;
+                    font-size: 24px !important;
+                    font-weight: 700 !important;
+                    line-height: 1.2 !important;
+                    border: none !important;
+                    padding: 0 !important;
+                ">Mental Health Risk Prediction</h1>
+                <p style="
+                    color: rgba(255, 255, 255, 0.9) !important;
+                    margin: 0 !important;
+                    font-size: 14px !important;
+                    font-weight: 400 !important;
+                    line-height: 1.4 !important;
+                ">Assess risk levels (Low, Medium, High) based on life and occupational parameters.</p>
+            </div>
         </div>
-        <div class="custom-hr"></div>
-    """, unsafe_allow_html=True)
+    """)
     
     # Load resources
     mental_columns = load_model("models/mental_columns.joblib")
@@ -1038,13 +1112,62 @@ elif st.session_state.page == "Mental Health":
 elif st.session_state.page == "Diabetes":
     apply_theme_css("#f59e0b", "#fffbeb", "#fef3c7")
     
-    st.markdown("""
-        <div style='margin-top: 10px;'>
-            <h1 style='margin-bottom: 5px;'>🩸 Diabetes Prediction</h1>
-            <p style='color: #475569;'>Assess insulin/glucose clinical records to evaluate diabetes outcome risk.</p>
+    render_html_card("""
+        <div style="
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        ">
+            <!-- Decorative background shapes -->
+            <div style="position: absolute; right: -30px; top: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); pointer-events: none;"></div>
+            <div style="position: absolute; right: 50px; bottom: -50px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); pointer-events: none;"></div>
+            
+            <!-- Icon Container -->
+            <div style="
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 12px;
+                padding: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            ">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                    <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z"/>
+                </svg>
+            </div>
+            
+            <!-- Text Content -->
+            <div style="flex-grow: 1;">
+                <h1 style="
+                    color: #ffffff !important;
+                    margin: 0 0 4px 0 !important;
+                    font-size: 24px !important;
+                    font-weight: 700 !important;
+                    line-height: 1.2 !important;
+                    border: none !important;
+                    padding: 0 !important;
+                ">Diabetes Prediction</h1>
+                <p style="
+                    color: rgba(255, 255, 255, 0.9) !important;
+                    margin: 0 !important;
+                    font-size: 14px !important;
+                    font-weight: 400 !important;
+                    line-height: 1.4 !important;
+                ">Assess insulin/glucose clinical records to evaluate diabetes outcome risk.</p>
+            </div>
         </div>
-        <div class="custom-hr"></div>
-    """, unsafe_allow_html=True)
+    """)
     
     # Load assets
     diab_columns = load_model("models/diabetes_columns.joblib")
