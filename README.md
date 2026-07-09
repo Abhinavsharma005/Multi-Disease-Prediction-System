@@ -1,6 +1,6 @@
 # 🩺 Health Predictor
 
-An AI-powered healthcare prediction platform built with **Machine Learning** and **Streamlit** that combines multiple healthcare prediction models into a single interactive web application.
+Healthcare prediction platform built combining multiple healthcare prediction models into a single interactive web application.
 
 Instead of developing separate applications for different healthcare problems, this project integrates four prediction modules into one platform, allowing users to easily switch between them through a clean and intuitive interface.
 
